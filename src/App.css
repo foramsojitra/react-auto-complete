@@ -40,4 +40,11 @@ input {
   background-color: #1d90ff;
 }
 
+.active {
+  background-color: #1d90ff;
+  cursor: 'pointer';
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  font-weight: 700;
+}
 

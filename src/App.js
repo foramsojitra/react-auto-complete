@@ -6,9 +6,10 @@ import { Input, Card } from 'antd';
 function App() {
   const [country, setCounry] = useState();
   const [countryMatch, setCountryMatch] = useState([]);
+  const [active, setActive] = useState(0);
 
   const searchCountry = (text) => {
-    console.log('searchCountry called', text)
+    // console.log('searchCountry called', text)
     if (!text) {
 
       setCountryMatch([]);
@@ -17,8 +18,6 @@ function App() {
 
       const getCountry = async () => {
         const res = await axios.get('https://restcountries.com/v2/name/' + text);
-        console.log('----', res.data.length)
-
         if (res.data) {
           setCountryMatch(res.data);
         } else {
@@ -29,6 +28,23 @@ function App() {
     }
   }
 
+  const onKeyDown = e => {
+    // console.log('ON key down', e.target.value, e.keyCode, active, country, countryMatch[active])
+    if (e.keyCode === 13) { // enter key
+      // console.log(country[active], active, 'vvbvv')
+      setActive(0);
+      setCountryMatch([]);
+      setCounry(countryMatch[active].name);
+    }
+    else if (e.keyCode === 38) { // up arrow
+      return (active === 0) ? null : setActive(active - 1);
+    }
+    else if (e.keyCode === 40) { // down arrow
+      console.log(country.length, active)
+      return (active - 1 === countryMatch.length) ? null : setActive(active + 1);
+    }
+  };
+
   return (
     <div className="App">
       <h2>Auto Complete</h2>
@@ -38,7 +54,8 @@ function App() {
           style={{ width: '40%', marginTop: '10px' }}
           placeholder='search'
           value={country}
-          onChange={(e) => [searchCountry(e.target.value), setCounry(e.target.value)]}
+          onChange={(e) => [searchCountry(e.target.value), setCounry(e.target.value), setActive(0)]}
+          onKeyDown={onKeyDown}
         />
         
         {countryMatch.length > 0 &&
@@ -49,14 +66,11 @@ function App() {
             >
             {countryMatch.length > 0 &&
               countryMatch.map((item, i) => {
-                return <div className='option' onClick={(e) => [setCounry(item.name), setCountryMatch([])]}>
-                  {item.name}
+                return <div 
+                className = {i === active ? 'active' : 'option'} 
+                onClick={(e) => [setCounry(item.name), setCountryMatch([])]}>
+                  {item.name} {i}
                 </div>
-                // <div key={i} style={{ width: '100%', marginTop: '1px', fontSize: '1rem',  cursor: 'pointer' }}>
-                // <Card className='option' onClick={(e) => [setCounry(item.name), setCountryMatch([])]}>
-                //   {item.name}
-                // </Card>
-                // </div>
               })}
           </div>}
         <br />
